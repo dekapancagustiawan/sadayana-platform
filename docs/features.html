@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laravel Base Features</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: kolom dokumen tunggal dengan nav sticky; tiap fitur = blok bertabel, izin ditampilkan sebagai chip mono */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --fg: #1b2230;
+  --muted: #5b6577;
+  --line: #dde1e8;
+  --accent: #2f5bd3;
+  --accent-soft: #e6ecfb;
+  --code-bg: #eef0f4;
+  --warn: #9a5b00;
+  --warn-soft: #fdf1dc;
+  --ok: #1f7a4d;
+  --ok-soft: #e1f3e9;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151c; --surface: #191d26; --fg: #e4e8f0; --muted: #98a2b5; --line: #2b3140;
+    --accent: #8aa8ff; --accent-soft: #232c45; --code-bg: #222837;
+    --warn: #f0b860; --warn-soft: #3a2d17; --ok: #6fd3a0; --ok-soft: #173326;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151c; --surface: #191d26; --fg: #e4e8f0; --muted: #98a2b5; --line: #2b3140;
+  --accent: #8aa8ff; --accent-soft: #232c45; --code-bg: #222837;
+  --warn: #f0b860; --warn-soft: #3a2d17; --ok: #6fd3a0; --ok-soft: #173326;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 400 17px/1.6 var(--font-body);
+}
+.wrap {
+  max-width: 980px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 48px 72px;
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 48px;
+}
+@media (max-width: 760px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 28px 48px; } }
+
+header.top { grid-column: 1 / -1; display: grid; gap: 10px; }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 700 clamp(32px, 5vw, 48px)/1.05 var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+.stack { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.stack span { font: 500 12.5px/1 var(--font-mono); padding: 6px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: grid; gap: 2px; }
+nav.toc a { color: var(--muted); text-decoration: none; padding: 5px 10px; border-left: 2px solid var(--line); font-size: 15px; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--fg); border-left-color: var(--accent); outline: none; }
+@media (max-width: 760px) {
+  nav.toc { position: static; display: flex; flex-wrap: wrap; gap: 6px; }
+  nav.toc a { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 14px; background: var(--surface); }
+}
+
+main { display: grid; gap: 56px; min-width: 0; }
+section { display: grid; gap: 16px; scroll-margin-top: 24px; }
+h2 { font: 600 26px/1.2 var(--font-display); margin: 0; text-wrap: balance; display: flex; align-items: baseline; gap: 12px; }
+h2 .n { font: 500 13px/1 var(--font-mono); color: var(--accent); }
+h3 { font: 600 17px/1.3 var(--font-body); margin: 0; }
+p { margin: 0; max-width: 68ch; }
+ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
+ul.plain li::marker { color: var(--accent); }
+
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+
+.table-box { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 11.5px/1.2 var(--font-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+
+.method { font: 500 11px/1 var(--font-mono); padding: 3px 6px; border-radius: 3px; margin-right: 6px; display: inline-block; min-width: 42px; text-align: center; }
+.get { background: var(--ok-soft); color: var(--ok); }
+.post { background: var(--accent-soft); color: var(--accent); }
+.put { background: var(--warn-soft); color: var(--warn); }
+.crud { background: var(--code-bg); color: var(--fg); }
+
+.perm { font: 500 12px/1 var(--font-mono); color: var(--accent); background: var(--accent-soft); padding: 4px 7px; border-radius: 4px; white-space: nowrap; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.item { padding: 16px 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); display: grid; gap: 6px; align-content: start; min-width: 0; }
+.item p { font-size: 15.5px; color: var(--muted); }
+
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 500 13px/1 var(--font-mono); }
+.flow span { padding: 7px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+.flow i { font-style: normal; color: var(--muted); }
+
+.note { border: 1px solid var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 14px 18px; display: grid; gap: 6px; }
+.note h3 { color: var(--warn); }
+
+.tests { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr) 32px; align-items: center; gap: 12px; font-size: 14.5px; }
+.bar .name { font-family: var(--font-mono); font-size: 13px; overflow-wrap: anywhere; }
+.bar .track { height: 8px; background: var(--code-bg); border-radius: 4px; overflow: hidden; }
+.bar .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+.bar .v { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 13px; }
+@media (max-width: 520px) { .bar { grid-template-columns: minmax(0, 1fr) 32px; } .bar .track { grid-column: 1 / -1; grid-row: 2; } }
+
+footer { grid-column: 1 / -1; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">Ringkasan fitur · repo laravel-base</div>
+    <h1>Laravel Base</h1>
+    <p class="lede">Starter Laravel 12 berisi landing page publik, back office AdminLTE untuk user, role, permission, audit log, dan settings, serta REST API berbasis Sanctum. Modul bisnis ditambahkan di atas fondasi ini.</p>
+    <div class="stack">
+      <span>Laravel 12</span><span>PHP 8.2</span><span>Spatie Permission</span><span>Sanctum</span><span>AdminLTE</span><span>Tailwind 4 + Vite</span><span>SQLite · PostgreSQL · MySQL</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Daftar isi">
+    <a href="#landing">Landing publik</a>
+    <a href="#auth">Autentikasi</a>
+    <a href="#admin">Back office</a>
+    <a href="#api">REST API</a>
+    <a href="#building">Fondasi modul</a>
+    <a href="#tests">Test</a>
+    <a href="#gaps">Catatan</a>
+  </nav>
+
+  <main>
+
+    <section id="landing">
+      <h2><span class="n">1</span>Landing page publik</h2>
+      <p>Halaman <code>/</code> tersusun dari section yang diatur di <code>config/landing.php</code>. Section bisa diurutkan ulang atau dihapus tanpa mengubah view.</p>
+      <div class="flow" aria-label="Urutan section default">
+        <span>hero</span><i>→</i><span>features</span><i>→</i><span>about</span><i>→</i><span>testimonials</span><i>→</i><span>faq</span><i>→</i><span>contact</span>
+      </div>
+      <div class="grid2">
+        <div class="item">
+          <h3>Dua bahasa</h3>
+          <p>Indonesia dan Inggris. Bahasa diganti lewat <code>/lang/{locale}</code> dan disimpan di session. Teksnya ada di <code>lang/{id,en}/landing.php</code>.</p>
+        </div>
+        <div class="item">
+          <h3>Form kontak</h3>
+          <p>Dibatasi 5 request per menit, ada honeypot dan reCAPTCHA opsional. Pesan dikirim ke email penerima dari Settings, dan notifikasi dashboard tetap dibuat walau email gagal.</p>
+        </div>
+        <div class="item">
+          <h3>Tema dari token</h3>
+          <p>Warna diambil dari token <code>brand-*</code> dan <code>accent</code> di <code>resources/css/app.css</code>. Ikon dari Phosphor, animasi dari AOS.</p>
+        </div>
+        <div class="item">
+          <h3>Identitas dari Settings</h3>
+          <p>Nama, logo, kontak, dan sosial media diambil dari <code>SettingsService::publicProfile()</code>, satu-satunya data settings yang boleh tampil di halaman publik.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="auth">
+      <h2><span class="n">2</span>Autentikasi</h2>
+      <ul class="plain">
+        <li>Login admin memakai session guard <code>web</code>. URL login bisa disamarkan lewat env <code>ADMIN_LOGIN_PATH</code>.</li>
+        <li>reCAPTCHA bisa diaktifkan di form login. Aturan validasinya selalu dipasang selama captcha aktif.</li>
+        <li>Login berhasil, login gagal, dan logout dicatat ke audit log.</li>
+        <li>Tamu yang membuka URL internal mendapat halaman 401, bukan dialihkan ke login. Halaman publik dan halaman error tidak menautkan URL login.</li>
+        <li>Setelah login, <code>User::landingRoute()</code> memilih halaman pertama sesuai permission user.</li>
+      </ul>
+    </section>
+
+    <section id="admin">
+      <h2><span class="n">3</span>Back office (AdminLTE)</h2>
+      <p>Role <code>Admin</code> otomatis lolos semua cek lewat <code>Gate::before</code>. Role lain dibuat dari UI dan diberi izin per menu (<code>access-*</code>) maupun izin rinci.</p>
+      <div class="table-box">
+        <table>
+          <thead><tr><th>Fitur</th><th>Route</th><th>Izin</th></tr></thead>
+          <tbody>
+            <tr><td>Dashboard</td><td><span class="method get">GET</span><code>/dashboard</code></td><td><span class="perm">access-dashboard</span></td></tr>
+            <tr><td>Manajemen user</td><td><span class="method crud">CRUD</span><code>/users</code></td><td><span class="perm">users.view</span></td></tr>
+            <tr><td>Manajemen role</td><td><span class="method crud">CRUD</span><code>/roles</code></td><td><span class="perm">roles.view</span></td></tr>
+            <tr><td>Manajemen permission</td><td><span class="method crud">CRUD</span><code>/permissions</code></td><td><span class="perm">permissions.view</span></td></tr>
+            <tr><td>Audit log, filter per action dan model</td><td><span class="method get">GET</span><code>/audit-logs</code></td><td><span class="perm">access-audit-logs</span></td></tr>
+            <tr><td>General settings: nama, logo, kontak, sosmed</td><td><span class="method put">PUT</span><code>/settings/general</code></td><td><span class="perm">access-settings</span></td></tr>
+            <tr><td>SMTP, password disimpan terenkripsi</td><td><span class="method put">PUT</span><code>/settings/mail</code></td><td><span class="perm">access-settings</span></td></tr>
+            <tr><td>Kirim email tes (5 per menit)</td><td><span class="method post">POST</span><code>/settings/mail/test</code></td><td><span class="perm">access-settings</span></td></tr>
+            <tr><td>Email log</td><td><span class="method get">GET</span><code>/email-logs</code></td><td><span class="perm">access-settings</span></td></tr>
+            <tr><td>Notifikasi global, lonceng di navbar</td><td><span class="method get">GET</span><code>/admin/notifications</code></td><td><span class="perm">access-notifications</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="api">
+      <h2><span class="n">4</span>REST API</h2>
+      <p>Semua endpoint berada di bawah <code>/api</code> dan memakai token Bearer dari Sanctum. Otorisasi dicek di controller dengan <code>Gate::authorize()</code> berbasis policy. Error auth, otorisasi, dan validasi dikembalikan dalam bentuk JSON.</p>
+      <div class="table-box">
+        <table>
+          <thead><tr><th>Endpoint</th><th>Keterangan</th></tr></thead>
+          <tbody>
+            <tr><td><span class="method get">GET</span><code>/api/health</code></td><td>Health check, tanpa login</td></tr>
+            <tr><td><span class="method post">POST</span><code>/api/auth/login</code></td><td>Mengembalikan token</td></tr>
+            <tr><td><span class="method post">POST</span><code>/api/auth/logout</code></td><td>Mencabut token</td></tr>
+            <tr><td><span class="method get">GET</span><code>/api/auth/me</code></td><td>Data user beserta role dan permission</td></tr>
+            <tr><td><span class="method crud">CRUD</span><code>/api/users</code></td><td>Filter: search, role, status, per_page</td></tr>
+            <tr><td><span class="method post">POST</span><code>/api/users/{id}/toggle-status</code></td><td>Aktif atau nonaktifkan user</td></tr>
+            <tr><td><span class="method post">POST</span><code>/api/users/{id}/reset-password</code></td><td>Reset password user</td></tr>
+            <tr><td><span class="method crud">CRUD</span><code>/api/roles</code></td><td>Manajemen role</td></tr>
+            <tr><td><span class="method crud">CRUD</span><code>/api/permissions</code></td><td>Bisa diambil dalam bentuk berkelompok</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="building">
+      <h2><span class="n">5</span>Fondasi untuk modul baru</h2>
+      <div class="flow" aria-label="Alur request web">
+        <span>Route</span><i>→</i><span>FormRequest</span><i>→</i><span>Controller</span><i>→</i><span>Service</span><i>→</i><span>Model</span><i>→</i><span>Blade</span>
+      </div>
+      <div class="grid2">
+        <div class="item">
+          <h3>CodeGeneratorService</h3>
+          <p>Membuat kode berurutan seperti nomor dokumen. Memakai row lock di <code>code_sequences</code> dan reset tiap bulan.</p>
+        </div>
+        <div class="item">
+          <h3>Blameable + auditFields()</h3>
+          <p>Trait dan macro Blueprint untuk kolom created_by dan updated_by. Model baru memakai UUID dan SoftDeletes.</p>
+        </div>
+        <div class="item">
+          <h3>MailService</h3>
+          <p>Mengirim email dan mencatat setiap percobaan ke <code>email_logs</code>. Kegagalan transport tidak melempar exception; cek status di log yang dikembalikan.</p>
+        </div>
+        <div class="item">
+          <h3>DashboardNotificationService</h3>
+          <p>Membuat notifikasi global dengan tipe, judul, pesan, URL, dan referensi.</p>
+        </div>
+        <div class="item">
+          <h3>Setting (key-value)</h3>
+          <p>Disimpan di cache dan menimpa config <code>app.name</code>, judul dan logo AdminLTE, serta <code>mail.*</code> saat boot.</p>
+        </div>
+        <div class="item">
+          <h3>Halaman error tahan banting</h3>
+          <p>Tidak memakai <code>@vite</code> dan membungkus setiap akses DB atau session dengan <code>rescue()</code>, jadi tetap tampil saat database bermasalah.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tests">
+      <h2><span class="n">6</span>Test</h2>
+      <p>Sekitar 55 test di <code>tests/Feature</code>. Angka di bawah adalah jumlah method test per file.</p>
+      <div class="tests">
+        <div class="bar"><span class="name">SettingsTest</span><span class="track"><span class="fill" style="width:100%; display:block"></span></span><span class="v">13</span></div>
+        <div class="bar"><span class="name">LandingPageTest</span><span class="track"><span class="fill" style="width:92%; display:block"></span></span><span class="v">12</span></div>
+        <div class="bar"><span class="name">ErrorPageTest</span><span class="track"><span class="fill" style="width:54%; display:block"></span></span><span class="v">7</span></div>
+        <div class="bar"><span class="name">LoginCaptchaTest</span><span class="track"><span class="fill" style="width:46%; display:block"></span></span><span class="v">6</span></div>
+        <div class="bar"><span class="name">DashboardTest</span><span class="track"><span class="fill" style="width:38%; display:block"></span></span><span class="v">5</span></div>
+        <div class="bar"><span class="name">RoleManagementUiAndLandingTest</span><span class="track"><span class="fill" style="width:38%; display:block"></span></span><span class="v">5</span></div>
+        <div class="bar"><span class="name">RoleMenuAccessTest</span><span class="track"><span class="fill" style="width:31%; display:block"></span></span><span class="v">4</span></div>
+        <div class="bar"><span class="name">RouteAuthorizationMatrixTest</span><span class="track"><span class="fill" style="width:8%; display:block"></span></span><span class="v">1</span></div>
+      </div>
+      <p>Satu test di <code>RouteAuthorizationMatrixTest</code> menjalankan seluruh matriks: URL harus tertutup bila menu tersembunyi untuk role tersebut.</p>
+    </section>
+
+    <section id="gaps">
+      <h2><span class="n">7</span>Catatan</h2>
+      <div class="note">
+        <h3>Celah yang terlihat</h3>
+        <ul class="plain">
+          <li>REST API hampir tidak punya test. Yang tersentuh hanya <code>/api/health</code> dan satu cek 401 di <code>/api/users</code>; CRUD users, roles, dan permissions lewat Sanctum belum diuji.</li>
+          <li>Belum ada modul bisnis. Repo ini memang dimaksudkan sebagai fondasi.</li>
+        </ul>
+      </div>
+      <h3>Checklist saat menambah layar admin baru</h3>
+      <ul class="plain">
+        <li>Permission <code>access-…</code> di <code>MenuAccessPermissionsSeeder</code></li>
+        <li>Label di <code>PermissionPresenter::MENU_LABELS</code></li>
+        <li>Baris di <code>RoleMenuAccessTest::MENU_ACCESS_BASELINE</code></li>
+        <li>Middleware <code>can:access-…</code> pada route</li>
+        <li>Entri menu di <code>config/adminlte.php</code> dengan <code>'can'</code> yang sama</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>Disusun dari routes, controller, service, dan test di repo per 17 Oktober 2026.</footer>
+</div>
+</body>
+</html>
