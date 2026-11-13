@@ -57,13 +57,13 @@ class AuditLog extends Model
         ?int $userId = null,
         ?array $payload = null,
         ?string $modelType = null,
-        ?int $modelId = null,
+        int|string|null $modelId = null,
     ): self {
         return static::create([
             'user_id' => $userId,
             'action' => $action,
             'model_type' => $modelType,
-            'model_id' => $modelId,
+            'model_id' => $modelId === null ? null : (string) $modelId,
             'payload' => $payload,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),

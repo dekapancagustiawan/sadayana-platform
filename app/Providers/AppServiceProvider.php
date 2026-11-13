@@ -3,9 +3,14 @@
 namespace App\Providers;
 
 use App\Enums\RoleType;
+use App\Models\StoredFile;
 use App\Policies\PermissionPolicy;
 use App\Policies\RolePolicy;
+use App\Policies\StoredFilePolicy;
 use App\Services\Settings\SettingsService;
+use App\Support\Authorization;
+use App\Support\CurrentCommunity;
+use App\Support\FileAccessRegistry;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -28,6 +33,24 @@ class AppServiceProvider extends ServiceProvider
             $this->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $this->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
         });
+
+        // Tipe kolom standar Dok 06 §2.2 — jangan pakai float/double untuk uang.
+        Blueprint::macro('money', function (string $column) {
+            return $this->decimal($column, 18, 2);
+        });
+
+        Blueprint::macro('quantity', function (string $column) {
+            return $this->decimal($column, 14, 3);
+        });
+
+        // FK ke komunitas untuk tabel tingkat atas (pasangan trait BelongsToCommunity).
+        Blueprint::macro('community', function () {
+            return $this->foreignUuid('community_id')->constrained('communities');
+        });
+
+        // Scoped: di-cache per request/job dan direset antar test.
+        $this->app->scoped(CurrentCommunity::class);
+        $this->app->singleton(FileAccessRegistry::class);
     }
 
     public function boot(): void
@@ -42,9 +65,16 @@ class AppServiceProvider extends ServiceProvider
         // Register policies for Spatie models
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Permission::class, PermissionPolicy::class);
+        Gate::policy(StoredFile::class, StoredFilePolicy::class);
 
-        // Implicitly grant "Admin" role all permissions
+        // Admin lolos semua gate, KECUALI ability keuangan yang dipisahkan
+        // (Authorization::SEGREGATED_ABILITIES): untuk itu Admin harus punya
+        // permission eksplisit, sama seperti role lain (SRS ROLE-001).
         Gate::before(function ($user, $ability) {
+            if (Authorization::isSegregated($ability)) {
+                return null;
+            }
+
             return $user->hasRole(RoleType::Admin->value) ? true : null;
         });
 

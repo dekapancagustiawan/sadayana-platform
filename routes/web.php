@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\DashboardNotificationController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\PageController;
@@ -52,6 +53,10 @@ Route::middleware('auth')->group(function () {
 
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // File privat (foto meter, bukti transfer, lampiran) — otorisasi per file
+    // lewat StoredFilePolicy + FileAccessRegistry, bukan gate menu.
+    Route::get('/files/{file}', [FileController::class, 'show'])->name('files.show');
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])

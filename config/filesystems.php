@@ -38,6 +38,17 @@ return [
             'report' => false,
         ],
 
+        // Upload domain (foto meter, bukti transfer, lampiran). TIDAK punya
+        // URL publik dan tidak di-serve langsung: akses selalu lewat route
+        // `files.show` yang memeriksa FilePolicy.
+        'private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/uploads'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "dekadev/laravel-base",
+    "name": "dekadev/sadayana-platform",
     "type": "project",
-    "description": "Laravel base project: landing page, AdminLTE back office, RBAC, audit log, Sanctum API.",
+    "description": "Sadayana — WargaFlow & WaterSys: platform manajemen perumahan (warga, air, sampah, iuran, tagihan, pembayaran, kas).",
     "keywords": [
         "laravel",
         "framework"
@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.3",
         "anhskohbo/no-captcha": "^3.8",
+        "brick/math": "^1.0",
         "jeroennoten/laravel-adminlte": "^3.16",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.3",
@@ -74,6 +75,10 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "test:pgsql": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test --configuration=phpunit.pgsql.xml"
         ]
     },
     "extra": {

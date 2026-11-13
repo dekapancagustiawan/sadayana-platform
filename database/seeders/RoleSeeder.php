@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\RoleType;
+use App\Support\Authorization;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -35,7 +36,10 @@ class RoleSeeder extends Seeder
         // MenuAccessPermissionsSeeder). Fungsinya kosmetik: Admin toh sudah
         // lolos semua gate lewat `Gate::before` di AppServiceProvider — daftar
         // eksplisit ini supaya layar Role Management terbaca utuh.
-        $adminPermissions = Permission::all();
+        // Izin keuangan yang dipisahkan (Authorization::SEGREGATED_ABILITIES)
+        // TIDAK ikut diberikan — Super Admin tidak otomatis berwenang atas
+        // transaksi keuangan (SRS ROLE-001).
+        $adminPermissions = Permission::whereNotIn('name', Authorization::SEGREGATED_ABILITIES)->get();
         if ($adminPermissions->isNotEmpty()) {
             $admin->givePermissionTo($adminPermissions);
         }
