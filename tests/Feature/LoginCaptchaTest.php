@@ -47,7 +47,7 @@ class LoginCaptchaTest extends TestCase
             ->assertDontSee('recaptcha/api.js', false);
 
         $this->post(route('login.submit'), [
-            'email' => $this->admin()->email,
+            'login' => $this->admin()->email,
             'password' => 'password',
         ])->assertRedirect(route('dashboard'));
     }
@@ -71,7 +71,7 @@ class LoginCaptchaTest extends TestCase
 
         $this->from(route('login'))
             ->post(route('login.submit'), [
-                'email' => $this->admin()->email,
+                'login' => $this->admin()->email,
                 'password' => 'password',
             ])
             ->assertRedirect(route('login'))
@@ -89,7 +89,7 @@ class LoginCaptchaTest extends TestCase
         $this->followingRedirects()
             ->from(route('login'))
             ->post(route('login.submit'), [
-                'email' => $this->admin()->email,
+                'login' => $this->admin()->email,
                 'password' => 'password',
                 'g-recaptcha-response' => 'invalid-token',
             ])
@@ -106,7 +106,7 @@ class LoginCaptchaTest extends TestCase
         NoCaptcha::shouldReceive('verifyResponse')->once()->andReturn(true);
 
         $this->post(route('login.submit'), [
-            'email' => $this->admin()->email,
+            'login' => $this->admin()->email,
             'password' => 'password',
             'g-recaptcha-response' => 'valid-token',
         ])->assertRedirect(route('dashboard'));
@@ -120,7 +120,7 @@ class LoginCaptchaTest extends TestCase
         $this->assertNull($admin->last_login_at);
 
         $this->post(route('login.submit'), [
-            'email' => $admin->email,
+            'login' => $admin->email,
             'password' => 'password',
         ]);
 

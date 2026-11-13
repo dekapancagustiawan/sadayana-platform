@@ -318,6 +318,14 @@ return [
             'icon_enabled' => 'fas fa-sun',
         ],
 
+        // Menu akun di dropdown user (navbar) — semua user login.
+        [
+            'text' => 'Ganti Password',
+            'route' => 'account.password.edit',
+            'icon' => 'fas fa-key',
+            'topnav_user' => true,
+        ],
+
         [
             'text' => 'Dashboard',
             'route' => 'dashboard',

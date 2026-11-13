@@ -10,6 +10,14 @@ class LoginRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
+    /**
+     * Identitas login: `login` bila ada, selain itu `email`.
+     */
+    public function loginIdentifier(): string
+    {
+        return (string) ($this->input('login') ?: $this->input('email'));
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -23,7 +31,9 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email', 'max:255'],
+            // `login` = email atau nomor HP; `email` tetap diterima untuk klien lama.
+            'login' => ['required_without:email', 'nullable', 'string', 'max:255'],
+            'email' => ['required_without:login', 'nullable', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:6'],
         ];
     }

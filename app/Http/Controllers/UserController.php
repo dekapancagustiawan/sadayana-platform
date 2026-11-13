@@ -6,9 +6,11 @@ use App\Models\User;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use App\Services\UserManagement\UserService;
+use App\Support\Phone;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -19,6 +21,18 @@ class UserController extends Controller
         protected RoleRepository $roleRepository,
         protected UserService $userService
     ) {}
+
+    /**
+     * Samakan format email/nomor HP SEBELUM validasi unik, supaya
+     * "0812..." dan "+62812..." terdeteksi sebagai nomor yang sama.
+     */
+    private function normalizeIdentity(Request $request): void
+    {
+        $request->merge([
+            'email' => filled($request->input('email')) ? Str::lower(trim((string) $request->input('email'))) : null,
+            'phone' => Phone::normalize($request->input('phone')),
+        ]);
+    }
 
     /**
      * Display a paginated list of users.
@@ -69,10 +83,13 @@ class UserController extends Controller
     {
         Gate::authorize('create', User::class);
 
+        $this->normalizeIdentity($request);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            // Warga boleh tanpa email, asal punya nomor HP untuk login.
+            'email' => ['nullable', 'required_without:phone', 'email', 'max:255', 'unique:users,email'],
+            'phone' => ['nullable', 'required_without:email', 'string', 'max:20', 'unique:users,phone'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'status' => ['required', Rule::in(['active', 'inactive', 'suspended'])],
             'roles' => ['required', 'array'],
@@ -105,10 +122,12 @@ class UserController extends Controller
     {
         Gate::authorize('update', $user);
 
+        $this->normalizeIdentity($request);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'email' => ['nullable', 'required_without:phone', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'phone' => ['nullable', 'required_without:email', 'string', 'max:20', Rule::unique('users', 'phone')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'status' => ['required', Rule::in(['active', 'inactive', 'suspended'])],
             'roles' => ['required', 'array'],

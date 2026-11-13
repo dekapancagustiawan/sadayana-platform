@@ -34,22 +34,24 @@ class LoginController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+        // FR-AUTH-001: identitas login berupa email ATAU nomor HP.
+        $validated = $request->validate([
+            'login' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string'],
             ...Captcha::rules(),
         ], Captcha::messages());
-        unset($credentials[Captcha::FIELD]);
+
+        $credentials = User::credentialsFor($validated['login'], $validated['password']);
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             AuditLog::record(
                 action: 'web.login.failed',
-                payload: ['email' => $credentials['email']],
+                payload: ['login' => $validated['login']],
             );
 
             return back()
-                ->withInput($request->only('email', 'remember'))
-                ->withErrors(['email' => 'These credentials do not match our records.']);
+                ->withInput($request->only('login', 'remember'))
+                ->withErrors(['login' => 'Email/nomor HP atau password salah.']);
         }
 
         /** @var User $user */
@@ -65,8 +67,8 @@ class LoginController extends Controller
             );
 
             return back()
-                ->withInput($request->only('email'))
-                ->withErrors(['email' => 'Your account is suspended or inactive. Please contact your administrator.']);
+                ->withInput($request->only('login'))
+                ->withErrors(['login' => 'Akun Anda nonaktif atau ditangguhkan. Hubungi pengurus.']);
         }
 
         $request->session()->regenerate();
@@ -76,6 +78,14 @@ class LoginController extends Controller
             action: 'web.login.success',
             userId: $user->id,
         );
+
+        // Password sementara wajib diganti dulu (FR-AUTH-003); middleware
+        // EnsurePasswordIsChanged juga menahan halaman lain sampai selesai.
+        if ($user->must_change_password) {
+            session()->forget('url.intended');
+
+            return redirect()->route('account.password.edit');
+        }
 
         $landingRoute = $user->landingRoute();
 

@@ -33,14 +33,14 @@ class LoginThrottleTest extends TestCase
         $user = $this->admin();
 
         for ($i = 0; $i < 5; $i++) {
-            $this->post(route('login.submit'), ['email' => $user->email, 'password' => 'wrong-password'])
-                ->assertSessionHasErrors('email');
+            $this->post(route('login.submit'), ['login' => $user->email, 'password' => 'wrong-password'])
+                ->assertSessionHasErrors('login');
         }
 
         // Password benar pun ditolak selama masih dibatasi.
-        $this->post(route('login.submit'), ['email' => $user->email, 'password' => 'password'])
+        $this->post(route('login.submit'), ['login' => $user->email, 'password' => 'password'])
             ->assertRedirect()
-            ->assertSessionHasErrors('email');
+            ->assertSessionHasErrors('login');
 
         $this->assertGuest();
     }

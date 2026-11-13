@@ -76,7 +76,7 @@ class RoleManagementUiAndLandingTest extends TestCase
         $user = $this->userWithRole(RoleType::from($roleName)->value);
 
         $this->post(route('login.submit'), [
-            'email' => $user->email,
+            'login' => $user->email,
             'password' => 'password',
         ])->assertRedirect(route($expectedRoute));
     }
@@ -89,7 +89,7 @@ class RoleManagementUiAndLandingTest extends TestCase
         $this->get(route('audit-logs.index'))->assertUnauthorized();
 
         $this->post(route('login.submit'), [
-            'email' => $admin->email,
+            'login' => $admin->email,
             'password' => 'password',
         ])->assertRedirect(route('audit-logs.index'));
     }
@@ -103,7 +103,7 @@ class RoleManagementUiAndLandingTest extends TestCase
         $user = $this->userWithRole('Supervisor');
 
         $this->post(route('login.submit'), [
-            'email' => $user->email,
+            'login' => $user->email,
             'password' => 'password',
         ])->assertRedirect(route('dashboard'));
     }

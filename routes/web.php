@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Account\PasswordController;
 use App\Http\Controllers\Api\DashboardNotificationController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PermissionController;
@@ -46,6 +48,19 @@ Route::middleware('guest')->group(function () {
     Route::post(config('app.login_path'), [LoginController::class, 'login'])
         ->middleware('throttle:login')
         ->name('login.submit');
+
+    // Lupa password — di bawah ADMIN_LOGIN_PATH supaya URL publik tidak
+    // membocorkan alamat login.
+    Route::prefix(config('app.login_path'))->group(function () {
+        Route::get('/forgot-password', [PasswordResetController::class, 'request'])->name('password.request');
+        Route::post('/forgot-password', [PasswordResetController::class, 'email'])
+            ->middleware('throttle:5,1')
+            ->name('password.email');
+        Route::get('/reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset');
+        Route::post('/reset-password', [PasswordResetController::class, 'update'])
+            ->middleware('throttle:5,1')
+            ->name('password.update');
+    });
 });
 
 // ─── Authenticated Routes ─────────────────────────────────────────────────────
@@ -53,6 +68,12 @@ Route::middleware('auth')->group(function () {
 
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // Ganti password sendiri — semua user login (FR-AUTH-003).
+    Route::get('/account/password', [PasswordController::class, 'edit'])->name('account.password.edit');
+    Route::put('/account/password', [PasswordController::class, 'update'])
+        ->middleware('throttle:10,1')
+        ->name('account.password.update');
 
     // File privat (foto meter, bukti transfer, lampiran) — otorisasi per file
     // lewat StoredFilePolicy + FileAccessRegistry, bukan gate menu.

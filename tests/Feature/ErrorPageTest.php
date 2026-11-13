@@ -79,7 +79,7 @@ class ErrorPageTest extends TestCase
         $admin = $this->userWithRole(RoleType::Admin->value);
 
         $this->post(route('login.submit'), [
-            'email' => $admin->email,
+            'login' => $admin->email,
             'password' => 'password',
         ])->assertRedirect(route('audit-logs.index'));
     }

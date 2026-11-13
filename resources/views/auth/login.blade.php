@@ -5,28 +5,32 @@
 @section('auth_header', config('app.name'))
 
 @section('auth_body')
+    @if (session('status'))
+        <div class="alert alert-success small" role="status">{{ session('status') }}</div>
+    @endif
+
     <form id="login-form" action="{{ route('login.submit') }}" method="POST">
         @csrf
 
-        {{-- Email --}}
+        {{-- Email atau nomor HP (FR-AUTH-001) --}}
         <div class="input-group mb-3">
             <input
-                id="email"
-                type="email"
-                name="email"
-                value="{{ old('email') }}"
-                class="form-control @error('email') is-invalid @enderror"
-                placeholder="Email address"
-                autocomplete="email"
+                id="login"
+                type="text"
+                name="login"
+                value="{{ old('login') }}"
+                class="form-control @error('login') is-invalid @enderror"
+                placeholder="Email atau nomor HP"
+                autocomplete="username"
                 autofocus
                 required
             >
             <div class="input-group-append">
                 <div class="input-group-text">
-                    <span class="fas fa-envelope"></span>
+                    <span class="fas fa-user"></span>
                 </div>
             </div>
-            @error('email')
+            @error('login')
                 <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
         </div>
@@ -65,8 +69,11 @@
             <div class="col-8">
                 <div class="icheck-primary">
                     <input type="checkbox" id="remember" name="remember">
-                    <label for="remember">Remember Me</label>
+                    <label for="remember">Ingat saya</label>
                 </div>
+            </div>
+            <div class="col-4 text-right">
+                <a href="{{ route('password.request') }}" class="small">Lupa password?</a>
             </div>
         </div>
 

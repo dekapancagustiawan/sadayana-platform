@@ -110,7 +110,8 @@ class AppServiceProvider extends ServiceProvider
     private function configureRateLimiting(): void
     {
         RateLimiter::for('login', function (Request $request) {
-            $email = Str::lower((string) $request->input('email'));
+            // Web memakai field `login` (email/nomor HP), API masih boleh `email`.
+            $email = Str::lower((string) ($request->input('login') ?? $request->input('email')));
 
             $response = function (Request $request, array $headers) {
                 $seconds = (int) ($headers['Retry-After'] ?? 60);
@@ -124,8 +125,8 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 return redirect()->back()
-                    ->withInput($request->only('email', 'remember'))
-                    ->withErrors(['email' => $message]);
+                    ->withInput($request->only('login', 'remember'))
+                    ->withErrors(['login' => $message]);
             };
 
             return [

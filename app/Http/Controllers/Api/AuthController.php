@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginRequest;
+use App\Models\User;
 use App\Services\Auth\AuthService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +24,9 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         try {
-            $result = $this->authService->login($request->only('email', 'password'));
+            $result = $this->authService->login(
+                User::credentialsFor($request->loginIdentifier(), (string) $request->input('password')),
+            );
 
             return response()->json([
                 'status' => 'ok',
@@ -35,7 +38,9 @@ class AuthController extends Controller
                         'id' => $result['user']->id,
                         'name' => $result['user']->name,
                         'email' => $result['user']->email,
+                        'phone' => $result['user']->phone,
                         'status' => $result['user']->status,
+                        'must_change_password' => $result['user']->must_change_password,
                         'roles' => $result['user']->getRoleNames(),
                     ],
                 ],

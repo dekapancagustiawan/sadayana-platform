@@ -13,7 +13,7 @@ class AuthService
     /**
      * Attempt to authenticate a user and issue a Sanctum token.
      *
-     * @param  array{email: string, password: string}  $credentials
+     * @param  array{email?: string, phone?: string, password: string}  $credentials  hasil User::credentialsFor()
      * @return array{token: NewAccessToken, user: User}
      *
      * @throws AuthenticationException
@@ -23,7 +23,7 @@ class AuthService
         if (! Auth::attempt($credentials)) {
             AuditLog::record(
                 action: 'auth.login.failed',
-                payload: ['email' => $credentials['email']],
+                payload: ['login' => $credentials['email'] ?? $credentials['phone'] ?? null],
             );
 
             throw new AuthenticationException('Invalid credentials.');

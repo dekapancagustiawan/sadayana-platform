@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Enums\CommunityRole;
 use App\Enums\RoleType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -28,6 +30,14 @@ class UserSeeder extends Seeder
 
         $this->seedAccount('admin@example.com', 'Administrator', 'password', RoleType::Admin);
         $this->seedAccount('user@example.com', 'Demo User', 'password', RoleType::User);
+
+        // Satu akun demo per role komunitas (password: "password"). Role-nya
+        // dibuat CommunityRoleSeeder; dilewati bila seeder itu belum jalan.
+        foreach (CommunityRole::cases() as $role) {
+            if (Role::where('name', $role->value)->exists()) {
+                $this->seedAccount($role->demoEmail(), 'Demo '.$role->value, 'password', $role);
+            }
+        }
     }
 
     private function seedProductionAdmin(): void
@@ -44,7 +54,7 @@ class UserSeeder extends Seeder
         }
     }
 
-    private function seedAccount(string $email, string $name, string $password, RoleType $role): User
+    private function seedAccount(string $email, string $name, string $password, RoleType|CommunityRole $role): User
     {
         $user = User::firstOrCreate(
             ['email' => $email],

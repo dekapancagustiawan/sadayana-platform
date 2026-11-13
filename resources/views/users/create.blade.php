@@ -47,7 +47,7 @@
 
                         {{-- Email --}}
                         <div class="form-group">
-                            <label for="email">Email Address <span class="text-danger">*</span></label>
+                            <label for="email">Email</label>
                             <input
                                 id="email"
                                 type="email"
@@ -55,7 +55,6 @@
                                 value="{{ old('email') }}"
                                 class="form-control @error('email') is-invalid @enderror"
                                 placeholder="user@example.com"
-                                required
                             >
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -64,18 +63,19 @@
 
                         {{-- Phone --}}
                         <div class="form-group">
-                            <label for="phone">Phone Number</label>
+                            <label for="phone">Nomor HP</label>
                             <input
                                 id="phone"
                                 type="text"
                                 name="phone"
                                 value="{{ old('phone') }}"
                                 class="form-control @error('phone') is-invalid @enderror"
-                                placeholder="e.g. +1234567890"
+                                placeholder="08xxxxxxxxxx"
                             >
                             @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            <small class="form-text text-muted">Isi email atau nomor HP (minimal salah satu); keduanya bisa dipakai untuk login. Password di bawah bersifat sementara dan wajib diganti saat login pertama.</small>
                         </div>
 
                         {{-- Password --}}

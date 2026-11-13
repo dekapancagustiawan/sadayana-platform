@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Enums\UserStatus;
+use App\Support\Phone;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -28,6 +31,8 @@ class User extends Authenticatable
         'status',
         'phone',
         'last_login_at',
+        'must_change_password',
+        'password_changed_at',
     ];
 
     /**
@@ -52,7 +57,47 @@ class User extends Authenticatable
             'password' => 'hashed',
             'status' => UserStatus::class,
             'last_login_at' => 'datetime',
+            'must_change_password' => 'boolean',
+            'password_changed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Nomor HP selalu disimpan ternormalisasi (62xxxxxxxxxx).
+     */
+    protected function phone(): Attribute
+    {
+        return Attribute::make(set: fn (?string $value) => Phone::normalize($value));
+    }
+
+    /**
+     * Email disimpan huruf kecil; string kosong menjadi NULL (akun tanpa email).
+     */
+    protected function email(): Attribute
+    {
+        return Attribute::make(set: fn (?string $value) => filled($value) ? Str::lower(trim($value)) : null);
+    }
+
+    /**
+     * Kredensial untuk Auth::attempt() dari input login (email atau nomor HP).
+     *
+     * @return array<string, string|null>
+     */
+    public static function credentialsFor(string $login, string $password): array
+    {
+        $login = trim($login);
+
+        return Phone::looksLikePhone($login)
+            ? ['phone' => Phone::normalize($login), 'password' => $password]
+            : ['email' => Str::lower($login), 'password' => $password];
+    }
+
+    /**
+     * Tandai password sebagai sementara: user wajib menggantinya saat login.
+     */
+    public function requirePasswordChange(): void
+    {
+        $this->forceFill(['must_change_password' => true])->save();
     }
 
     /**

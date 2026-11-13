@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsurePasswordIsChanged;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -25,8 +26,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Apply the visitor's session-selected language (id/en) on every
         // web request — see App\Http\Middleware\SetLocale.
+        // EnsurePasswordIsChanged: password sementara wajib diganti dulu
+        // (FR-AUTH-003); tidak berpengaruh untuk tamu.
         $middleware->web(append: [
             SetLocale::class,
+            EnsurePasswordIsChanged::class,
         ]);
 
         // Otorisasi route memakai middleware bawaan `can:<permission>` (lewat

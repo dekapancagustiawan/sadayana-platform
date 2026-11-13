@@ -23,6 +23,10 @@ class UserService
      */
     public function createUser(array $data): User
     {
+        // Password dari admin selalu sementara: wajib diganti saat login
+        // pertama (FR-AUTH-003).
+        $data['must_change_password'] = true;
+
         $user = $this->userRepository->create($data);
 
         AuditLog::record(
@@ -40,7 +44,7 @@ class UserService
         $this->notifications->notify(
             NotificationType::USER_CREATED,
             'User baru',
-            "{$user->name} ({$user->email}) ditambahkan oleh ".(Auth::user()?->name ?? 'sistem').'.',
+            "{$user->name} (".($user->email ?? $user->phone).') ditambahkan oleh '.(Auth::user()?->name ?? 'sistem').'.',
             route('users.edit', $user),
             $user,
         );
@@ -55,6 +59,11 @@ class UserService
     {
         $oldRoles = $user->getRoleNames()->toArray();
         $oldData = $user->only(['name', 'email', 'phone', 'status']);
+
+        // Admin mengisi password baru untuk user lain = password sementara.
+        if (! empty($data['password']) && $user->id !== Auth::id()) {
+            $data['must_change_password'] = true;
+        }
 
         $user = $this->userRepository->update($user, $data);
 
@@ -108,6 +117,7 @@ class UserService
     public function resetPassword(User $user, string $password): void
     {
         $this->userRepository->resetPassword($user, $password);
+        $user->requirePasswordChange();
 
         AuditLog::record(
             action: 'users.password_reset',
