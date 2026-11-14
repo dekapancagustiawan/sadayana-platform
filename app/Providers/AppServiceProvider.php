@@ -8,6 +8,8 @@ use App\Policies\PermissionPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\StoredFilePolicy;
 use App\Services\Settings\SettingsService;
+use App\Services\Water\MeterPhotoAccess;
+use App\Services\Water\MeterReadingService;
 use App\Support\Authorization;
 use App\Support\CurrentCommunity;
 use App\Support\FileAccessRegistry;
@@ -66,6 +68,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Permission::class, PermissionPolicy::class);
         Gate::policy(StoredFile::class, StoredFilePolicy::class);
+
+        // Aturan akses file privat per kategori (lihat FileAccessRegistry).
+        $files = $this->app->make(FileAccessRegistry::class);
+        $files->register(MeterReadingService::PHOTO_CATEGORY, fn ($user, $file) => $this->app->make(MeterPhotoAccess::class)($user, $file));
 
         // Admin lolos semua gate, KECUALI ability keuangan yang dipisahkan
         // (Authorization::SEGREGATED_ABILITIES): untuk itu Admin harus punya

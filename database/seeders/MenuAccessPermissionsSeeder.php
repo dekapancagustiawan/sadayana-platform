@@ -76,6 +76,8 @@ class MenuAccessPermissionsSeeder extends Seeder
             'access-houses' => [$admin],
             'access-officer-assignments' => [$admin],
             'access-my-house' => [],
+            'access-water' => [$admin],
+            'access-meter-recording' => [$admin],
 
             // ── Settings ───────────────────────────────────────────────
             'access-user-management' => [$admin],

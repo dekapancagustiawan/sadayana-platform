@@ -55,6 +55,7 @@ class CommunityRoleSeeder extends Seeder
         $ketua = CommunityRole::KetuaRt->value;
         $bendahara = CommunityRole::Bendahara->value;
         $warga = CommunityRole::Warga->value;
+        $petugasAir = CommunityRole::PetugasLapangan->value;
 
         // Matriks kosong ([]) = hanya Admin (Super Admin) — kelola master data
         // rumah & penghuni adalah wewenang ROLE-001 (SRS §2). Pengurus bisa
@@ -77,6 +78,17 @@ class CommunityRoleSeeder extends Seeder
             'officer-assignments.manage' => [$ketua],
             'access-my-house' => [$warga],
             'my-house.view' => [$warga],
+
+            // ── Fase 3: air (FR-WAT-*) ─────────────────────────────────
+            'access-water' => [$ketua, $bendahara],
+            'meter-readings.view' => [$ketua, $bendahara],
+            'meter-readings.validate' => [$ketua, $bendahara],
+            'meter-readings.correct' => [$petugasAir, $ketua, $bendahara],
+            'access-meter-recording' => [$petugasAir],
+            'meter-readings.record' => [$petugasAir],
+            'meter-readings.record-any' => [], // catat rumah mana pun, tanpa penugasan
+            'water-customers.manage' => [$bendahara],
+            'water-tariffs.manage' => [$bendahara],
         ];
     }
 }

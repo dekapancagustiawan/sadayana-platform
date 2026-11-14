@@ -31,6 +31,8 @@ class RoleMenuAccessTest extends TestCase
         'access-houses' => ['Admin' => true, 'User' => false],
         'access-officer-assignments' => ['Admin' => true, 'User' => false],
         'access-my-house' => ['Admin' => true, 'User' => false],
+        'access-water' => ['Admin' => true, 'User' => false],
+        'access-meter-recording' => ['Admin' => true, 'User' => false],
         'access-user-management' => ['Admin' => true, 'User' => false],
         'access-audit-logs' => ['Admin' => true, 'User' => false],
         'access-settings' => ['Admin' => true, 'User' => false],

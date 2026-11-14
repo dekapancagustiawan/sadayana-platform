@@ -63,6 +63,22 @@ final class Money
     }
 
     /**
+     * Format tampilan kuantitas tanpa nol di belakang: "8.000" → "8",
+     * "12.500" → "12,5".
+     */
+    public static function formatQuantity(BigNumber|int|string|null $value): string
+    {
+        if ($value === null || $value === '') {
+            return '—';
+        }
+
+        $plain = rtrim(rtrim((string) self::quantity($value), '0'), '.');
+        [$integer, $fraction] = array_pad(explode('.', $plain, 2), 2, null);
+
+        return number_format((int) $integer, 0, ',', '.').($fraction !== null ? ','.$fraction : '');
+    }
+
+    /**
      * Format tampilan Rupiah: `Rp150.000` atau `Rp25.500,50`.
      */
     public static function format(BigNumber|int|string|null $value): string

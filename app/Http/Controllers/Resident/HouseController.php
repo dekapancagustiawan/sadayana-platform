@@ -9,7 +9,10 @@ use App\Http\Requests\Resident\HouseRequest;
 use App\Models\Block;
 use App\Models\House;
 use App\Models\Resident;
+use App\Models\WaterCustomer;
+use App\Models\WaterUsageRecord;
 use App\Services\Resident\HouseService;
+use App\Services\Water\WaterCustomerService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -70,7 +73,7 @@ class HouseController extends Controller
         return redirect()->route('houses.show', $house)->with('success', "Rumah {$house->house_code} ditambahkan.");
     }
 
-    public function show(House $house): View
+    public function show(House $house, WaterCustomerService $waterCustomers): View
     {
         Gate::authorize('houses.view');
 
@@ -78,6 +81,10 @@ class HouseController extends Controller
 
         return view('resident.houses.show', [
             'house' => $house,
+            // Kartu Air (Fase 3)
+            'waterCustomer' => WaterCustomer::where('house_id', $house->getKey())->orderByDesc('start_date')->first(),
+            'waterMeter' => $waterCustomers->activeMeter($house),
+            'waterUsages' => WaterUsageRecord::where('house_id', $house->getKey())->orderByDesc('usage_period')->limit(6)->get(),
             'relationshipTypes' => RelationshipType::cases(),
             // Kandidat penghuni untuk form "pindah masuk".
             'residents' => Resident::orderBy('full_name')->get(['id', 'full_name', 'phone']),

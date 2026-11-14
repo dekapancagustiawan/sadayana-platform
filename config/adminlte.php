@@ -371,6 +371,36 @@ return [
             'can' => 'access-officer-assignments',
         ],
 
+        // ── AIR (Fase 3) ───────────────────────────────────────────────
+        ['header' => 'WATER', 'can' => ['access-meter-recording', 'access-water']],
+
+        [
+            'text' => 'Record Meters',
+            'route' => 'meter-recording.index',
+            'icon' => 'fas fa-camera',
+            'can' => 'access-meter-recording',
+            'active' => ['meter-recording', 'meter-recording/*'],
+        ],
+        [
+            'text' => 'Meter Readings',
+            'route' => 'meter-readings.index',
+            'icon' => 'fas fa-tachometer-alt',
+            'can' => 'access-water',
+            'active' => ['meter-readings', 'meter-readings/*'],
+        ],
+        [
+            'text' => 'Water Customers',
+            'route' => 'water-customers.index',
+            'icon' => 'fas fa-faucet',
+            'can' => 'access-water',
+        ],
+        [
+            'text' => 'Water Tariffs',
+            'route' => 'water-tariffs.index',
+            'icon' => 'fas fa-tags',
+            'can' => 'access-water',
+        ],
+
         // ── SETTINGS ───────────────────────────────────────────────────
         // AdminLTE tidak menyembunyikan header yang semua anaknya tersembunyi,
         // jadi header dipagari sendiri. `can` berbentuk array = Gate::any (OR).

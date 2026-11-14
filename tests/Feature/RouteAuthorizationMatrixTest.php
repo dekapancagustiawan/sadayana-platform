@@ -42,6 +42,11 @@ class RouteAuthorizationMatrixTest extends TestCase
         'blocks.index' => [],
         'officer-assignments.index' => [],
         'my-house.index' => [],
+        // Fase 3 — role komunitas diuji di Water\WaterFlowTest.
+        'meter-recording.index' => [],
+        'meter-readings.index' => [],
+        'water-customers.index' => [],
+        'water-tariffs.index' => [],
     ];
 
     protected function setUp(): void

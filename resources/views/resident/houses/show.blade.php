@@ -50,6 +50,10 @@
                 </div>
             </div>
 
+            @canany(['meter-readings.view', 'water-customers.manage'])
+                @include('water.partials.house-card')
+            @endcanany
+
             @can('residents.manage')
                 <div class="card card-outline card-success">
                     <div class="card-header"><h3 class="card-title"><i class="fas fa-sign-in-alt mr-1"></i> Penghuni masuk</h3></div>

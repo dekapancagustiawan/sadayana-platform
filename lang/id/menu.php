@@ -23,6 +23,11 @@ return [
     // ── Section headers ──────────────────────────────────────────────
     'SETTINGS' => 'PENGATURAN',
     'COMMUNITY' => 'WARGA',
+    'WATER' => 'AIR',
+    'Record Meters' => 'Catat Meter',
+    'Meter Readings' => 'Pembacaan Meter',
+    'Water Customers' => 'Pelanggan Air',
+    'Water Tariffs' => 'Tarif Air',
 
     // ── Menu items ────────────────────────────────────────────────────
     'Dashboard' => 'Dasbor',

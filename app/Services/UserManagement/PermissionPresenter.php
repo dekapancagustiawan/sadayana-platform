@@ -40,6 +40,8 @@ class PermissionPresenter
         'access-houses' => 'Blok, Rumah & Penghuni',
         'access-officer-assignments' => 'Penugasan Petugas',
         'access-my-house' => 'Rumah Saya (portal warga)',
+        'access-water' => 'Air: Pembacaan Meter, Pelanggan & Tarif',
+        'access-meter-recording' => 'Catat Meter (petugas)',
         'access-user-management' => 'Users, Roles & Permissions',
         'access-audit-logs' => 'Audit Logs',
         'access-settings' => 'Settings & Email Log',

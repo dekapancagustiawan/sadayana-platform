@@ -22,6 +22,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Settings\EmailLogController;
 use App\Http\Controllers\Settings\SettingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Water\MeterReadingController;
+use App\Http\Controllers\Water\MeterRecordingController;
+use App\Http\Controllers\Water\WaterCustomerController;
+use App\Http\Controllers\Water\WaterTariffController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 
@@ -118,6 +122,38 @@ Route::middleware('auth')->group(function () {
         Route::get('/officer-assignments', [OfficerAssignmentController::class, 'index'])->name('officer-assignments.index');
         Route::post('/officer-assignments', [OfficerAssignmentController::class, 'store'])->name('officer-assignments.store');
         Route::post('/officer-assignments/{officerAssignment}/end', [OfficerAssignmentController::class, 'end'])->name('officer-assignments.end');
+    });
+
+    // ─── Air (Fase 3, FR-WAT-*) ──────────────────────────────────────────────
+    // Petugas lapangan: catat meter dari HP (rumah sesuai penugasan).
+    Route::middleware(['can:access-meter-recording', 'can:meter-readings.record'])
+        ->prefix('meter-recording')->name('meter-recording.')->group(function () {
+            Route::get('/', [MeterRecordingController::class, 'index'])->name('index');
+            Route::get('/{house}', [MeterRecordingController::class, 'create'])->name('create');
+            Route::post('/{house}', [MeterRecordingController::class, 'store'])->name('store');
+        });
+
+    // Ajukan koreksi angka — petugas maupun pengurus.
+    Route::post('/meter-readings/{reading}/corrections', [MeterReadingController::class, 'requestCorrection'])
+        ->middleware('can:meter-readings.correct')
+        ->name('meter-readings.corrections.store');
+
+    Route::middleware('can:access-water')->group(function () {
+        Route::get('/meter-readings', [MeterReadingController::class, 'index'])->name('meter-readings.index');
+        Route::get('/meter-readings/{reading}', [MeterReadingController::class, 'show'])->name('meter-readings.show');
+        Route::post('/meter-readings/{reading}/validate', [MeterReadingController::class, 'validateReading'])->name('meter-readings.validate');
+        Route::post('/meter-readings/{reading}/reject', [MeterReadingController::class, 'reject'])->name('meter-readings.reject');
+        Route::post('/reading-corrections/{correction}/approve', [MeterReadingController::class, 'approveCorrection'])->name('reading-corrections.approve');
+        Route::post('/reading-corrections/{correction}/reject', [MeterReadingController::class, 'rejectCorrection'])->name('reading-corrections.reject');
+
+        Route::get('/water-customers', [WaterCustomerController::class, 'index'])->name('water-customers.index');
+        Route::post('/houses/{house}/water-customer', [WaterCustomerController::class, 'subscribe'])->name('water-customers.subscribe');
+        Route::post('/houses/{house}/water-meter/replace', [WaterCustomerController::class, 'replaceMeter'])->name('water-meters.replace');
+        Route::post('/water-customers/{customer}/unsubscribe', [WaterCustomerController::class, 'unsubscribe'])->name('water-customers.unsubscribe');
+        Route::post('/water-customers/{customer}/suspension', [WaterCustomerController::class, 'suspension'])->name('water-customers.suspension');
+
+        Route::get('/water-tariffs', [WaterTariffController::class, 'index'])->name('water-tariffs.index');
+        Route::post('/water-tariffs/periods', [WaterTariffController::class, 'storePeriod'])->name('water-tariffs.periods.store');
     });
 
     // Portal warga
