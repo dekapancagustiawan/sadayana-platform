@@ -7,16 +7,11 @@
     ];
 @endphp
 
-<footer class="bg-slate-950 text-slate-400">
+<footer class="bg-brand-950 text-slate-400">
     <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-center md:justify-between">
         <div>
-            <div class="flex items-center gap-2 font-bold text-white">
-                @if ($site['logo_url'])
-                    <img src="{{ $site['logo_url'] }}" alt="{{ $site['name'] }}" class="h-8 w-auto">
-                @else
-                    <span class="grid size-8 place-items-center rounded-lg bg-brand-600 text-white">{{ mb_substr($site['name'], 0, 1) }}</span>
-                    <span>{{ $site['name'] }}</span>
-                @endif
+            <div class="flex items-center gap-2.5">
+                @include('landing.partials.brand', ['dark' => true])
             </div>
             <p class="mt-3 max-w-sm text-sm">{{ __('landing.footer.tagline') }}</p>
         </div>

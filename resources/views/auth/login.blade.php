@@ -2,7 +2,7 @@
 
 {{-- Tampilan halaman login diatur di public/css/custom.css (bagian "Login"). --}}
 
-@section('auth_header', config('app.name'))
+@section('auth_header', 'Masuk ke akun Anda')
 
 @section('auth_body')
     @if (session('status'))

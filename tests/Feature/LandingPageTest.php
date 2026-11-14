@@ -27,11 +27,20 @@ class LandingPageTest extends TestCase
         ], $overrides);
     }
 
+    public function test_sadayana_brand_is_the_default_without_uploaded_logo(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee(asset('images/sadayana-mark.png'), false)
+            ->assertSee(asset('images/sadayana-logo.png'), false)
+            ->assertSee('Silih Asih, Silih Asah, Silih Asuh');
+    }
+
     public function test_landing_renders_all_default_sections(): void
     {
         $response = $this->get('/')->assertOk();
 
-        foreach (['features', 'about', 'testimonials', 'faq', 'contact'] as $section) {
+        foreach (['features', 'workflow', 'about', 'roles', 'faq', 'contact'] as $section) {
             $response->assertSee('id="'.$section.'"', false);
         }
     }

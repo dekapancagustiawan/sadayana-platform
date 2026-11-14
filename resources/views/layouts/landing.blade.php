@@ -8,13 +8,13 @@
     <meta property="og:title" content="@yield('title', __('landing.meta.title', ['app' => $site['name']]))">
     <meta property="og:description" content="@yield('description', __('landing.meta.description', ['app' => $site['name']]))">
     <meta property="og:type" content="website">
-    @if ($site['logo_url'])
-        <meta property="og:image" content="{{ url($site['logo_url']) }}">
-    @endif
+    <meta name="theme-color" content="#003673">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    <meta property="og:image" content="{{ url($site['logo_url'] ?? asset(config('landing.default_logo'))) }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:ital,wght@0,700;0,800;0,900;1,600&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 

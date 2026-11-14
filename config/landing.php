@@ -19,35 +19,58 @@ return [
 
     // Urutan section yang tampil. Hapus baris untuk menyembunyikan section;
     // nama = partial di resources/views/landing/sections/{nama}.blade.php.
+    // (Partial `testimonials` masih tersedia bila nanti ada testimoni asli.)
     'sections' => [
         'hero',
         'features',
+        'workflow',
         'about',
-        'testimonials',
+        'roles',
         'faq',
         'contact',
     ],
 
     // Gambar hero (path relatif ke public/, mis. 'images/hero.jpg').
-    // null = latar gradasi tanpa gambar.
+    // null = ilustrasi logo Sadayana di atas latar gradasi.
     'hero_image' => env('LANDING_HERO_IMAGE'),
 
-    // Kartu fitur: key → ikon Phosphor (https://phosphoricons.com). Judul dan
-    // deskripsinya di landing.features.items.{key}.
+    // Logo bawaan bila belum ada logo yang diunggah di General Settings.
+    'default_logo' => 'images/sadayana-logo.png',
+    'default_mark' => 'images/sadayana-mark.png',
+
+    // Kartu fitur: key → [ikon Phosphor, warna kartu: brand|leaf|sun].
+    // Judul dan deskripsi di landing.features.items.{key}.
     'features' => [
-        'fast' => 'ph-lightning',
-        'secure' => 'ph-shield-check',
-        'support' => 'ph-headset',
-        'flexible' => 'ph-puzzle-piece',
-        'insight' => 'ph-chart-line-up',
-        'mobile' => 'ph-device-mobile',
+        'residents' => ['ph-house-line', 'brand'],
+        'water' => ['ph-drop', 'brand'],
+        'waste' => ['ph-recycle', 'leaf'],
+        'contributions' => ['ph-hand-coins', 'sun'],
+        'payments' => ['ph-receipt', 'brand'],
+        'transparency' => ['ph-chart-bar', 'leaf'],
+    ],
+
+    // Langkah alur kerja (section workflow): key → ikon.
+    // Teks di landing.workflow.steps.{key}.
+    'workflow' => [
+        'record' => 'ph-camera',
+        'bill' => 'ph-file-text',
+        'pay' => 'ph-upload-simple',
+        'verify' => 'ph-seal-check',
     ],
 
     // Angka di section About. Label di landing.about.stats.{key}.
     'stats' => [
-        'clients' => '120+',
-        'projects' => '350+',
-        'years' => '8',
+        'modules' => '8',
+        'roles' => '6',
+        'access' => '24/7',
+    ],
+
+    // Peran pengguna (section roles): key → ikon. Teks di landing.roles.items.{key}.
+    'roles' => [
+        'board' => 'ph-users-three',
+        'treasurer' => 'ph-wallet',
+        'officer' => 'ph-clipboard-text',
+        'resident' => 'ph-house',
     ],
 
     // Tampilkan form kontak di section Contact. Pesan dikirim ke "Email

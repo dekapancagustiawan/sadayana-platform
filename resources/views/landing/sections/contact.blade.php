@@ -11,7 +11,7 @@
     <div class="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-5">
         <div class="lg:col-span-2" data-aos="fade-right">
             <p class="text-sm font-semibold uppercase tracking-widest text-brand-600">{{ __('landing.contact.eyebrow') }}</p>
-            <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{{ __('landing.contact.title') }}</h2>
+            <h2 class="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">{{ __('landing.contact.title') }}</h2>
             <p class="mt-4 text-slate-500">{{ __('landing.contact.subtitle') }}</p>
 
             @if (count($contactItems))

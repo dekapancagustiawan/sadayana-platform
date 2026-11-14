@@ -72,11 +72,11 @@ return [
     */
 
     'logo' => '<b>'.e(env('APP_NAME', 'Laravel')).'</b>',
-    'logo_img' => 'images/logo.svg',
+    'logo_img' => 'images/sadayana-mark.png',
     'logo_img_class' => 'brand-image',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Logo',
+    'logo_img_alt' => 'Sadayana',
 
     /*
     |--------------------------------------------------------------------------
@@ -91,14 +91,15 @@ return [
     |
     */
 
+    // Logo lengkap Sadayana di halaman login / lupa password.
     'auth_logo' => [
-        'enabled' => false,
+        'enabled' => true,
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'Auth Logo',
+            'path' => 'images/sadayana-logo.png',
+            'alt' => 'Sadayana',
             'class' => '',
-            'width' => 50,
-            'height' => 50,
+            'width' => 220,
+            'height' => 153,
         ],
     ],
 
