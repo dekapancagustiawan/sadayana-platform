@@ -36,6 +36,12 @@ class RouteAuthorizationMatrixTest extends TestCase
         'admin.notifications.index' => [],
         'settings.index' => [],
         'email-logs.index' => [],
+        // Fase 2 — role komunitas diuji di Resident\HouseAuthorizationTest.
+        'houses.index' => [],
+        'residents.index' => [],
+        'blocks.index' => [],
+        'officer-assignments.index' => [],
+        'my-house.index' => [],
     ];
 
     protected function setUp(): void

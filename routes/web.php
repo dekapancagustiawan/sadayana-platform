@@ -10,6 +10,14 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\PageController;
+use App\Http\Controllers\Resident\BlockController;
+use App\Http\Controllers\Resident\HouseController;
+use App\Http\Controllers\Resident\HouseOccupancyController;
+use App\Http\Controllers\Resident\MyHouseController;
+use App\Http\Controllers\Resident\OfficerAssignmentController;
+use App\Http\Controllers\Resident\ResidentAccountController;
+use App\Http\Controllers\Resident\ResidentController;
+use App\Http\Controllers\Resident\ResidentImportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Settings\EmailLogController;
 use App\Http\Controllers\Settings\SettingController;
@@ -83,6 +91,39 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard')
         ->middleware('can:access-dashboard');
+
+    // ─── Rumah & Penghuni (Fase 2, FR-RES-*) ─────────────────────────────────
+    // Gate menu access-houses; izin baca/ubah yang lebih rinci (houses.view,
+    // houses.manage, residents.*) diperiksa di controller/FormRequest.
+    Route::middleware('can:access-houses')->group(function () {
+        Route::resource('blocks', BlockController::class)->except(['show']);
+
+        Route::middleware('can:residents.import')->group(function () {
+            Route::get('/houses/import', [ResidentImportController::class, 'create'])->name('houses.import');
+            Route::post('/houses/import', [ResidentImportController::class, 'store'])->name('houses.import.store');
+            Route::get('/houses/import/template', [ResidentImportController::class, 'template'])->name('houses.import.template');
+        });
+
+        Route::resource('houses', HouseController::class);
+        Route::post('/houses/{house}/occupancies', [HouseOccupancyController::class, 'store'])->name('houses.occupancies.store');
+        Route::post('/occupancies/{houseResident}/end', [HouseOccupancyController::class, 'end'])->name('occupancies.end');
+
+        Route::resource('residents', ResidentController::class)->except(['destroy']);
+        Route::post('/residents/{resident}/account', [ResidentAccountController::class, 'store'])->name('residents.account.store');
+        Route::post('/residents/{resident}/account/link', [ResidentAccountController::class, 'link'])->name('residents.account.link');
+        Route::delete('/residents/{resident}/account/{user}', [ResidentAccountController::class, 'destroy'])->name('residents.account.destroy');
+    });
+
+    Route::middleware('can:access-officer-assignments')->group(function () {
+        Route::get('/officer-assignments', [OfficerAssignmentController::class, 'index'])->name('officer-assignments.index');
+        Route::post('/officer-assignments', [OfficerAssignmentController::class, 'store'])->name('officer-assignments.store');
+        Route::post('/officer-assignments/{officerAssignment}/end', [OfficerAssignmentController::class, 'end'])->name('officer-assignments.end');
+    });
+
+    // Portal warga
+    Route::get('/my-house', [MyHouseController::class, 'index'])
+        ->middleware('can:access-my-house')
+        ->name('my-house.index');
 
     // ─── User Management ─────────────────────────────────────────────────────
     Route::middleware('can:users.view')->group(function () {

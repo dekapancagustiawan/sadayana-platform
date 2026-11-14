@@ -32,6 +32,18 @@ final class Phone
     }
 
     /**
+     * Format tampilan lokal: 6281234567890 → 081234567890.
+     */
+    public static function display(?string $normalized): ?string
+    {
+        if ($normalized === null || $normalized === '') {
+            return null;
+        }
+
+        return str_starts_with($normalized, '62') ? '0'.substr($normalized, 2) : $normalized;
+    }
+
+    /**
      * Apakah input login berbentuk nomor telepon (bukan email).
      */
     public static function looksLikePhone(string $value): bool

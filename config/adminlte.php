@@ -334,6 +334,43 @@ return [
             'can' => 'access-dashboard',
         ],
 
+        // ── WARGA (Fase 2) ─────────────────────────────────────────────
+        ['header' => 'COMMUNITY', 'can' => ['access-houses', 'access-officer-assignments', 'access-my-house']],
+
+        [
+            'text' => 'My House',
+            'route' => 'my-house.index',
+            'icon' => 'fas fa-home',
+            'can' => 'access-my-house',
+        ],
+        [
+            'text' => 'Houses',
+            'route' => 'houses.index',
+            'icon' => 'fas fa-house-user',
+            'can' => 'access-houses',
+            'active' => ['houses', 'houses/*', 'regex:@^occupancies/@'],
+        ],
+        [
+            'text' => 'Residents',
+            'route' => 'residents.index',
+            'icon' => 'fas fa-users',
+            'can' => 'access-houses',
+            'active' => ['residents', 'residents/*'],
+        ],
+        [
+            'text' => 'Blocks',
+            'route' => 'blocks.index',
+            'icon' => 'fas fa-th-large',
+            'can' => 'access-houses',
+            'active' => ['blocks', 'blocks/*'],
+        ],
+        [
+            'text' => 'Officer Assignments',
+            'route' => 'officer-assignments.index',
+            'icon' => 'fas fa-user-tag',
+            'can' => 'access-officer-assignments',
+        ],
+
         // ── SETTINGS ───────────────────────────────────────────────────
         // AdminLTE tidak menyembunyikan header yang semua anaknya tersembunyi,
         // jadi header dipagari sendiri. `can` berbentuk array = Gate::any (OR).

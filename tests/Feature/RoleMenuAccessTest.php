@@ -28,6 +28,9 @@ class RoleMenuAccessTest extends TestCase
     private const MENU_ACCESS_BASELINE = [
         'access-dashboard' => ['Admin' => true, 'User' => true],
         'access-notifications' => ['Admin' => true, 'User' => false],
+        'access-houses' => ['Admin' => true, 'User' => false],
+        'access-officer-assignments' => ['Admin' => true, 'User' => false],
+        'access-my-house' => ['Admin' => true, 'User' => false],
         'access-user-management' => ['Admin' => true, 'User' => false],
         'access-audit-logs' => ['Admin' => true, 'User' => false],
         'access-settings' => ['Admin' => true, 'User' => false],

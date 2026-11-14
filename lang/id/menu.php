@@ -22,9 +22,15 @@ return [
 
     // ── Section headers ──────────────────────────────────────────────
     'SETTINGS' => 'PENGATURAN',
+    'COMMUNITY' => 'WARGA',
 
     // ── Menu items ────────────────────────────────────────────────────
     'Dashboard' => 'Dasbor',
+    'My House' => 'Rumah Saya',
+    'Houses' => 'Rumah',
+    'Residents' => 'Penghuni',
+    'Blocks' => 'Blok',
+    'Officer Assignments' => 'Penugasan Petugas',
     'Users' => 'Pengguna',
     'Roles & Permissions' => 'Peran & Izin Akses',
     'Audit Logs' => 'Log Audit',

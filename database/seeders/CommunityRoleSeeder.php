@@ -52,14 +52,31 @@ class CommunityRoleSeeder extends Seeder
     public static function matrix(): array
     {
         $all = array_column(CommunityRole::cases(), 'value');
+        $ketua = CommunityRole::KetuaRt->value;
+        $bendahara = CommunityRole::Bendahara->value;
+        $warga = CommunityRole::Warga->value;
 
+        // Matriks kosong ([]) = hanya Admin (Super Admin) — kelola master data
+        // rumah & penghuni adalah wewenang ROLE-001 (SRS §2). Pengurus bisa
+        // diberi izin tambahan dari layar Role Management.
         return [
             // ── Fase 1: dasar ──────────────────────────────────────────
             'access-dashboard' => $all,
             'dashboard.view' => $all,
 
-            // Fase berikutnya menambahkan blok izinnya di sini, mis.:
-            // 'houses.view' => [CommunityRole::KetuaRt->value, CommunityRole::Bendahara->value],
+            // ── Fase 2: rumah & penghuni (FR-RES-*) ────────────────────
+            'access-houses' => [$ketua, $bendahara],
+            'houses.view' => [$ketua, $bendahara],
+            'houses.manage' => [],
+            'residents.view' => [$ketua, $bendahara],
+            'residents.manage' => [],
+            'residents.view-identity' => [],
+            'residents.accounts' => [],
+            'residents.import' => [],
+            'access-officer-assignments' => [$ketua],
+            'officer-assignments.manage' => [$ketua],
+            'access-my-house' => [$warga],
+            'my-house.view' => [$warga],
         ];
     }
 }

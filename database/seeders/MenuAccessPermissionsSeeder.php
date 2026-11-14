@@ -71,6 +71,12 @@ class MenuAccessPermissionsSeeder extends Seeder
             'access-dashboard' => [$admin, $user],
             'access-notifications' => [$admin],
 
+            // ── Warga (Fase 2). Role komunitas mendapat izin ini dari
+            // CommunityRoleSeeder; di sini hanya Admin. ────────────────
+            'access-houses' => [$admin],
+            'access-officer-assignments' => [$admin],
+            'access-my-house' => [],
+
             // ── Settings ───────────────────────────────────────────────
             'access-user-management' => [$admin],
             'access-audit-logs' => [$admin],

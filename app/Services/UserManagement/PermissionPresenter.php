@@ -37,6 +37,9 @@ class PermissionPresenter
     private const MENU_LABELS = [
         'access-dashboard' => 'Dashboard',
         'access-notifications' => 'Notifikasi (lonceng navbar)',
+        'access-houses' => 'Blok, Rumah & Penghuni',
+        'access-officer-assignments' => 'Penugasan Petugas',
+        'access-my-house' => 'Rumah Saya (portal warga)',
         'access-user-management' => 'Users, Roles & Permissions',
         'access-audit-logs' => 'Audit Logs',
         'access-settings' => 'Settings & Email Log',

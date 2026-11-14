@@ -7,6 +7,7 @@ use App\Support\Phone;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -106,6 +107,19 @@ class User extends Authenticatable
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class);
+    }
+
+    /**
+     * Profil penghuni yang diwakili akun ini (FR-RES-005).
+     *
+     * @return BelongsToMany<Resident, $this>
+     */
+    public function residents(): BelongsToMany
+    {
+        return $this->belongsToMany(Resident::class, 'resident_user_accounts')
+            ->using(ResidentUserAccount::class)
+            ->withPivot('id', 'created_by')
+            ->withTimestamps();
     }
 
     /**

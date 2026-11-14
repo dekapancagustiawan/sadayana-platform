@@ -18,4 +18,7 @@ return [
     'default_name' => env('COMMUNITY_NAME', 'Perumahan Sadayana'),
 
     'default_timezone' => env('COMMUNITY_TIMEZONE', 'Asia/Jakarta'),
+
+    // Role yang diberikan ke akun warga yang dibuat dari data penghuni.
+    'resident_role' => env('COMMUNITY_RESIDENT_ROLE', 'Warga'),
 ];
