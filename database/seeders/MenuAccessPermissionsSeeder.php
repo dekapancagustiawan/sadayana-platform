@@ -78,6 +78,16 @@ class MenuAccessPermissionsSeeder extends Seeder
             'access-my-house' => [],
             'access-water' => [$admin],
             'access-meter-recording' => [$admin],
+            'access-waste' => [$admin],
+            'access-waste-recording' => [$admin],
+            'access-contributions' => [$admin],
+            'access-billing' => [$admin],
+            'access-cash' => [$admin],
+            'access-payments' => [$admin],
+            'access-my-bills' => [],
+            'access-announcements' => [$admin],
+            'access-complaints' => [$admin],
+            'access-reports' => [$admin],
 
             // ── Settings ───────────────────────────────────────────────
             'access-user-management' => [$admin],

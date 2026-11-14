@@ -1,7 +1,6 @@
 @extends('adminlte::page')
 
-@php($editing = $resident->exists)
-
+@php $editing = $resident->exists; @endphp
 @section('title', $editing ? 'Ubah Penghuni' : 'Tambah Penghuni')
 
 @section('content_header')

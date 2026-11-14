@@ -371,6 +371,84 @@ return [
             'can' => 'access-officer-assignments',
         ],
 
+        // Portal warga & semua user (Fase 5–8).
+        [
+            'text' => 'My Bills',
+            'route' => 'my-bills.index',
+            'icon' => 'fas fa-file-invoice-dollar',
+            'can' => 'access-my-bills',
+        ],
+        [
+            'text' => 'Announcements',
+            'route' => 'announcements.index',
+            'icon' => 'fas fa-bullhorn',
+            'can' => 'access-announcements',
+            'active' => ['announcements', 'announcements/*'],
+        ],
+        [
+            'text' => 'Complaints',
+            'route' => 'complaints.index',
+            'icon' => 'fas fa-comment-dots',
+            'can' => 'access-complaints',
+            'active' => ['complaints', 'complaints/*'],
+        ],
+        [
+            'text' => 'My Notifications',
+            'route' => 'notifications.index',
+            'icon' => 'fas fa-bell',
+        ],
+
+        // ── KEUANGAN (Fase 5–7, 9) ─────────────────────────────────────
+        ['header' => 'FINANCE', 'can' => ['access-billing', 'access-payments', 'access-cash', 'access-reports']],
+        [
+            'text' => 'Invoices',
+            'route' => 'invoices.index',
+            'icon' => 'fas fa-file-invoice',
+            'can' => 'access-billing',
+            'active' => ['invoices', 'invoices/*', 'billing-exemptions'],
+        ],
+        [
+            'text' => 'Payments',
+            'route' => 'payments.index',
+            'icon' => 'fas fa-money-check-alt',
+            'can' => 'access-payments',
+            'active' => ['payments', 'payments/*'],
+        ],
+        [
+            'text' => 'Cash Book',
+            'route' => 'cash.index',
+            'icon' => 'fas fa-book',
+            'can' => 'access-cash',
+        ],
+        [
+            'text' => 'Reports',
+            'route' => 'reports.index',
+            'icon' => 'fas fa-chart-bar',
+            'can' => 'access-reports',
+            'active' => ['reports', 'reports/*'],
+        ],
+
+        // ── LAYANAN SAMPAH & IURAN (Fase 4) ────────────────────────────
+        ['header' => 'SERVICES', 'can' => ['access-waste', 'access-waste-recording', 'access-contributions']],
+        [
+            'text' => 'Record Waste Pickup',
+            'route' => 'waste.collection',
+            'icon' => 'fas fa-truck',
+            'can' => 'access-waste-recording',
+        ],
+        [
+            'text' => 'Waste Service',
+            'route' => 'waste.index',
+            'icon' => 'fas fa-recycle',
+            'can' => 'access-waste',
+        ],
+        [
+            'text' => 'Contributions',
+            'route' => 'contributions.index',
+            'icon' => 'fas fa-hand-holding-usd',
+            'can' => 'access-contributions',
+        ],
+
         // ── AIR (Fase 3) ───────────────────────────────────────────────
         ['header' => 'WATER', 'can' => ['access-meter-recording', 'access-water']],
 

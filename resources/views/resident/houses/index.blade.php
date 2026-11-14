@@ -90,7 +90,7 @@
                 </thead>
                 <tbody>
                     @forelse ($houses as $house)
-                        @php($primary = $house->primaryResident())
+                        @php $primary = $house->primaryResident(); @endphp
                         <tr @class(['text-muted' => ! $house->is_active])>
                             <td class="font-weight-bold text-nowrap">
                                 <a href="{{ route('houses.show', $house) }}">{{ $house->house_code }}</a>

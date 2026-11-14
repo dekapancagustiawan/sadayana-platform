@@ -3,10 +3,15 @@
 namespace App\Providers;
 
 use App\Enums\RoleType;
+use App\Models\Payment;
 use App\Models\StoredFile;
 use App\Policies\PermissionPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\StoredFilePolicy;
+use App\Services\Communication\CommunityService;
+use App\Services\Finance\CashService;
+use App\Services\Payment\PaymentService;
+use App\Services\Resident\HouseAccessService;
 use App\Services\Settings\SettingsService;
 use App\Services\Water\MeterPhotoAccess;
 use App\Services\Water\MeterReadingService;
@@ -72,6 +77,17 @@ class AppServiceProvider extends ServiceProvider
         // Aturan akses file privat per kategori (lihat FileAccessRegistry).
         $files = $this->app->make(FileAccessRegistry::class);
         $files->register(MeterReadingService::PHOTO_CATEGORY, fn ($user, $file) => $this->app->make(MeterPhotoAccess::class)($user, $file));
+        // Bukti transfer: bendahara/pengurus, atau warga rumah pembayarnya.
+        $files->register(PaymentService::PROOF_CATEGORY, function ($user, $file) {
+            if ($user->can('payments.view')) {
+                return true;
+            }
+            $payment = Payment::where('proof_file_id', $file->getKey())->first();
+
+            return $payment && $this->app->make(HouseAccessService::class)->housesFor($user)->contains('id', $payment->house_id);
+        });
+        $files->register(CashService::EVIDENCE_CATEGORY, fn ($user) => $user->can('cash.view'));
+        $files->register(CommunityService::ATTACHMENT_CATEGORY, fn ($user) => $user->can('complaints.manage'));
 
         // Admin lolos semua gate, KECUALI ability keuangan yang dipisahkan
         // (Authorization::SEGREGATED_ABILITIES): untuk itu Admin harus punya

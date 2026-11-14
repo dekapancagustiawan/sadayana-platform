@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\DashboardService;
+use App\Services\Reporting\DashboardWidgetService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -24,6 +25,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'stats' => $this->dashboardService->stats($user),
             'activities' => $this->dashboardService->recentActivity($user),
+            'widgets' => app(DashboardWidgetService::class)->for($user),
         ]);
     }
 }

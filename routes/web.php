@@ -1,15 +1,24 @@
 <?php
 
+use App\Http\Controllers\Account\NotificationController;
 use App\Http\Controllers\Account\PasswordController;
 use App\Http\Controllers\Api\DashboardNotificationController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Billing\InvoiceController;
+use App\Http\Controllers\Billing\MyBillController;
+use App\Http\Controllers\Communication\AnnouncementController;
+use App\Http\Controllers\Communication\ComplaintController;
+use App\Http\Controllers\Contribution\ContributionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\Finance\CashController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\PageController;
+use App\Http\Controllers\Reporting\ReportController;
 use App\Http\Controllers\Resident\BlockController;
 use App\Http\Controllers\Resident\HouseController;
 use App\Http\Controllers\Resident\HouseOccupancyController;
@@ -22,6 +31,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Settings\EmailLogController;
 use App\Http\Controllers\Settings\SettingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Waste\WasteController;
 use App\Http\Controllers\Water\MeterReadingController;
 use App\Http\Controllers\Water\MeterRecordingController;
 use App\Http\Controllers\Water\WaterCustomerController;
@@ -154,6 +164,94 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/water-tariffs', [WaterTariffController::class, 'index'])->name('water-tariffs.index');
         Route::post('/water-tariffs/periods', [WaterTariffController::class, 'storePeriod'])->name('water-tariffs.periods.store');
+    });
+
+    // ─── Sampah & Iuran (Fase 4) ─────────────────────────────────────────────
+    Route::middleware('can:access-waste')->group(function () {
+        Route::get('/waste', [WasteController::class, 'index'])->name('waste.index');
+        Route::post('/waste/subscriptions', [WasteController::class, 'bulkSubscribe'])->name('waste.bulk-subscribe');
+        Route::post('/houses/{house}/waste-subscription', [WasteController::class, 'subscribe'])->name('waste.subscribe');
+        Route::post('/waste/subscriptions/{subscription}/end', [WasteController::class, 'unsubscribe'])->name('waste.unsubscribe');
+        Route::post('/waste/fees', [WasteController::class, 'storeFee'])->name('waste.fees.store');
+    });
+    Route::middleware('can:access-waste-recording')->group(function () {
+        Route::get('/waste/collection', [WasteController::class, 'collection'])->name('waste.collection');
+        Route::post('/waste/collection', [WasteController::class, 'storeCollection'])->name('waste.collection.store');
+    });
+    Route::middleware('can:access-contributions')->group(function () {
+        Route::get('/contributions', [ContributionController::class, 'index'])->name('contributions.index');
+        Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store');
+        Route::post('/contributions/{type}/periods', [ContributionController::class, 'storePeriod'])->name('contributions.periods.store');
+        Route::post('/contributions/{type}/toggle', [ContributionController::class, 'toggle'])->name('contributions.toggle');
+        Route::post('/contributions/{type}/assign', [ContributionController::class, 'assign'])->name('contributions.assign');
+    });
+
+    // ─── Tagihan (Fase 5) ────────────────────────────────────────────────────
+    Route::middleware('can:access-billing')->group(function () {
+        Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+        Route::post('/invoices/generate', [InvoiceController::class, 'generate'])->name('invoices.generate');
+        Route::post('/invoices/issue', [InvoiceController::class, 'issue'])->name('invoices.issue');
+        Route::post('/invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
+        Route::get('/billing-exemptions', [InvoiceController::class, 'exemptions'])->name('billing-exemptions.index');
+        Route::post('/billing-exemptions', [InvoiceController::class, 'storeExemption'])->name('billing-exemptions.store');
+        Route::post('/billing-exemptions/{exemption}/end', [InvoiceController::class, 'endExemption'])->name('billing-exemptions.end');
+    });
+    // Detail/cetak invoice: pengurus atau warga rumah itu (dicek di controller).
+    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+
+    // ─── Pembayaran (Fase 7) ─────────────────────────────────────────────────
+    Route::middleware('can:access-payments')->group(function () {
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/cash', [PaymentController::class, 'cash'])->name('payments.cash');
+        Route::post('/payments/cash', [PaymentController::class, 'storeCash'])->name('payments.cash.store');
+        Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+        Route::post('/payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
+        Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+        Route::post('/payments/{payment}/reverse', [PaymentController::class, 'reverse'])->name('payments.reverse');
+    });
+    Route::middleware('can:access-my-bills')->group(function () {
+        Route::get('/my-bills', [MyBillController::class, 'index'])->name('my-bills.index');
+        Route::post('/my-bills/{house}/pay', [MyBillController::class, 'store'])->name('my-bills.pay');
+        Route::post('/my-bills/payments/{payment}/resubmit', [MyBillController::class, 'resubmit'])->name('my-bills.resubmit');
+        Route::post('/my-bills/payments/{payment}/cancel', [MyBillController::class, 'cancel'])->name('my-bills.cancel');
+    });
+
+    // ─── Kas (Fase 6) ────────────────────────────────────────────────────────
+    Route::middleware('can:access-cash')->group(function () {
+        Route::get('/cash', [CashController::class, 'index'])->name('cash.index');
+        Route::post('/cash', [CashController::class, 'store'])->name('cash.store');
+        Route::post('/cash/accounts', [CashController::class, 'storeAccount'])->name('cash.accounts.store');
+        Route::post('/cash/{transaction}/approve', [CashController::class, 'approve'])->name('cash.approve');
+        Route::post('/cash/{transaction}/reject', [CashController::class, 'reject'])->name('cash.reject');
+        Route::post('/cash/{transaction}/reverse', [CashController::class, 'reverse'])->name('cash.reverse');
+    });
+
+    // ─── Komunikasi (Fase 8) ─────────────────────────────────────────────────
+    Route::middleware('can:access-announcements')->group(function () {
+        Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('/announcements/create', [AnnouncementController::class, 'create'])->name('announcements.create');
+        Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::get('/announcements/{announcement}', [AnnouncementController::class, 'show'])->name('announcements.show');
+        Route::get('/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('announcements.edit');
+        Route::put('/announcements/{announcement}', [AnnouncementController::class, 'update'])->name('announcements.update');
+    });
+    Route::middleware('can:access-complaints')->group(function () {
+        Route::get('/complaints', [ComplaintController::class, 'index'])->name('complaints.index');
+        Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
+        Route::get('/complaints/{complaint}', [ComplaintController::class, 'show'])->name('complaints.show');
+        Route::put('/complaints/{complaint}', [ComplaintController::class, 'update'])->name('complaints.update');
+    });
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{id}', [NotificationController::class, 'open'])->name('notifications.open');
+    Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+
+    // ─── Laporan (Fase 9) ────────────────────────────────────────────────────
+    Route::middleware(['can:access-reports', 'can:reports.view'])->prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/billing', [ReportController::class, 'billing'])->name('billing');
+        Route::get('/arrears', [ReportController::class, 'arrears'])->name('arrears');
+        Route::get('/cash-book', [ReportController::class, 'cashBook'])->name('cash-book');
+        Route::get('/recap', [ReportController::class, 'recap'])->name('recap');
     });
 
     // Portal warga

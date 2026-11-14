@@ -1,7 +1,6 @@
 @extends('adminlte::page')
 
-@php($editing = $block->exists)
-
+@php $editing = $block->exists; @endphp
 @section('title', $editing ? 'Ubah Blok' : 'Tambah Blok')
 
 @section('content_header')

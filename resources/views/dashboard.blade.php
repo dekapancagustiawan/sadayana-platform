@@ -29,6 +29,8 @@
         </p>
     </div>
 
+    @include('dashboard.widgets')
+
     @if (count($stats))
         <div class="row">
             @foreach ($stats as $stat)

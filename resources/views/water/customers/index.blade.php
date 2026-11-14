@@ -35,8 +35,8 @@
                 </thead>
                 <tbody>
                     @forelse ($customers as $customer)
-                        @php($meter = $meters->get($customer->house_id))
-                        @php($usage = $lastUsage->get($customer->house_id))
+                        @php $meter = $meters->get($customer->house_id); @endphp
+                        @php $usage = $lastUsage->get($customer->house_id); @endphp
                         <tr>
                             <td>{{ $customer->customer_number }}</td>
                             <td><a href="{{ route('houses.show', $customer->house) }}">{{ $customer->house->house_code }}</a></td>

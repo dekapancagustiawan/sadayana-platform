@@ -56,6 +56,7 @@ class CommunityRoleSeeder extends Seeder
         $bendahara = CommunityRole::Bendahara->value;
         $warga = CommunityRole::Warga->value;
         $petugasAir = CommunityRole::PetugasLapangan->value;
+        $petugasSampah = CommunityRole::PetugasSampah->value;
 
         // Matriks kosong ([]) = hanya Admin (Super Admin) — kelola master data
         // rumah & penghuni adalah wewenang ROLE-001 (SRS §2). Pengurus bisa
@@ -89,6 +90,50 @@ class CommunityRoleSeeder extends Seeder
             'meter-readings.record-any' => [], // catat rumah mana pun, tanpa penugasan
             'water-customers.manage' => [$bendahara],
             'water-tariffs.manage' => [$bendahara],
+
+            // ── Fase 4: sampah & iuran (FR-WST-*, FR-COM-*) ────────────
+            'access-waste' => [$ketua, $bendahara],
+            'waste.view' => [$ketua, $bendahara],
+            'waste.manage' => [$bendahara],
+            'access-waste-recording' => [$petugasSampah],
+            'waste-services.record' => [$petugasSampah],
+            'access-contributions' => [$ketua, $bendahara],
+            'contributions.manage' => [$bendahara],
+
+            // ── Fase 5: tagihan (FR-BIL-*) ─────────────────────────────
+            'access-billing' => [$ketua, $bendahara],
+            'invoices.view' => [$ketua, $bendahara],
+            'invoices.generate' => [$bendahara],
+            'invoices.issue' => [$bendahara],
+            'invoices.cancel' => [$bendahara],
+            'billing-exemptions.manage' => [$bendahara],
+
+            // ── Fase 6: kas (FR-FIN-*, Q12) ────────────────────────────
+            'access-cash' => [$ketua, $bendahara],
+            'cash.view' => [$ketua, $bendahara],
+            'cash.record' => [$bendahara],
+            'cash.approve' => [$ketua],
+            'cash.reverse' => [$bendahara],
+            'cash-accounts.manage' => [$bendahara],
+
+            // ── Fase 7: pembayaran (FR-PAY-*) ──────────────────────────
+            'access-payments' => [$ketua, $bendahara],
+            'payments.view' => [$ketua, $bendahara],
+            'payments.verify' => [$bendahara],
+            'payments.reverse' => [$bendahara],
+            'access-my-bills' => [$warga],
+            'payments.submit' => [$warga],
+
+            // ── Fase 8: komunikasi (FR-NOT-*) ──────────────────────────
+            'access-announcements' => $all,
+            'announcements.manage' => [$ketua],
+            'access-complaints' => $all,
+            'complaints.submit' => [$warga, $petugasAir, $petugasSampah],
+            'complaints.manage' => [$ketua, $bendahara, $petugasSampah],
+
+            // ── Fase 9: laporan (FR-RPT-*) ─────────────────────────────
+            'access-reports' => [$ketua, $bendahara],
+            'reports.view' => [$ketua, $bendahara],
         ];
     }
 }

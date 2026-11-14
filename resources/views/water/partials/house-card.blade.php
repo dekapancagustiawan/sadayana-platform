@@ -4,8 +4,7 @@
 --}}
 @use('App\Support\Money')
 
-@php($open = $waterCustomer && $waterCustomer->end_date === null)
-
+@php $open = $waterCustomer && $waterCustomer->end_date === null; @endphp
 <div class="card card-outline card-info">
     <div class="card-header">
         <h3 class="card-title"><i class="fas fa-faucet mr-1"></i> Air</h3>
